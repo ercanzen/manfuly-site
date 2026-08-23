@@ -4,6 +4,28 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Cinematic slow zoom on the hero photo — subtle, premium, restaurant-appropriate */
+#ai-K-uL9t .block-background {
+  overflow: hidden;
+}
+#ai-K-uL9t .block-background img {
+  animation: mfl-kenburns 24s ease-in-out infinite alternate;
+  transform-origin: center center;
+}
+@keyframes mfl-kenburns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.08);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #ai-K-uL9t .block-background img {
+    animation: none;
+  }
+}
+
 /* Slim gradient scroll-progress bar */
 #mfl-progress {
   position: fixed;
