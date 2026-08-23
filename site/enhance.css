@@ -75,38 +75,3 @@ a:hover,
 button:hover {
   filter: brightness(1.04);
 }
-
-/* Back-to-top button */
-#mfl-top {
-  position: fixed;
-  right: 22px;
-  bottom: 22px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #e65100, #ff9800);
-  box-shadow: 0 8px 24px rgba(230, 81, 0, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  opacity: 0;
-  transform: translateY(16px) scale(0.9);
-  pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 9998;
-}
-#mfl-top.mfl-show {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-}
-#mfl-top:hover {
-  transform: translateY(-3px) scale(1.06);
-  box-shadow: 0 12px 28px rgba(230, 81, 0, 0.45);
-}
-#mfl-top svg {
-  width: 20px;
-  height: 20px;
-  fill: #fff;
-}

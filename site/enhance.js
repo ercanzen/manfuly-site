@@ -21,26 +21,6 @@
     document.addEventListener("scroll", updateProgress, { passive: true });
     updateProgress();
 
-    /* Back-to-top button */
-    var top = document.createElement("div");
-    top.id = "mfl-top";
-    top.setAttribute("role", "button");
-    top.setAttribute("aria-label", "Nach oben scrollen");
-    top.innerHTML =
-      '<svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>';
-    document.body.appendChild(top);
-    top.addEventListener("click", function () {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-    document.addEventListener(
-      "scroll",
-      function () {
-        if (window.scrollY > 500) top.classList.add("mfl-show");
-        else top.classList.remove("mfl-show");
-      },
-      { passive: true }
-    );
-
     /* Scroll-reveal for content sections */
     var reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
