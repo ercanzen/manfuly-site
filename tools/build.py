@@ -23,7 +23,7 @@ WHATSAPP = "41795504481"
 WHATSAPP_LABEL = "079 550 44 81"
 STREET = "Bettlachstrasse 36"
 CITY = "2540 Grenchen"
-VERSION = "5"
+VERSION = "6"
 
 e = html.escape
 
@@ -276,9 +276,12 @@ def page_home():
         )
         + header("/")
         + f"""<main id="main">
-<section class="hero wrap" aria-labelledby="hero-title">
-  <div class="grid hero__row">
-    <div class="hero__text">
+<section class="hero-embed" aria-labelledby="hero-title">
+  <figure class="hero-embed__photo">
+    <img src="/assets/img/koch-834.jpg" srcset="/assets/img/koch-560.jpg 560w, /assets/img/koch-834.jpg 834w" sizes="(min-width: 900px) 52vw, 100vw" alt="Unser Koch schwenkt Gemüse im Wok in der Küche" width="834" height="947" fetchpriority="high">
+  </figure>
+  <div class="wrap hero-embed__inner">
+    <div class="hero-embed__text">
       <span class="meta">China-Restaurant in Grenchen</span>
       <h1 class="hero__title" id="hero-title">Chinesische Küche aus Wok und <em>Bambuskorb.</em></h1>
       <p class="lead">Im Restaurant an der Bettlachstrasse 36 oder zum Mitnehmen. Online bestellen und frisch zubereitet abholen.</p>
@@ -287,9 +290,6 @@ def page_home():
         <a class="link" href="/reservierung/">Tisch reservieren <span class="arrow" aria-hidden="true">→</span></a>
       </div>
     </div>
-    <figure class="hero__media hero__media--portrait">
-      <img src="/assets/img/koch-834.jpg" srcset="/assets/img/koch-560.jpg 560w, /assets/img/koch-834.jpg 834w" sizes="(min-width: 900px) 42vw, 100vw" alt="Unser Koch schwenkt Gemüse im Wok in der Küche" width="834" height="947" fetchpriority="high">
-    </figure>
   </div>
 </section>
 
@@ -310,26 +310,26 @@ def page_home():
   </div>
 </section>
 
-<section class="section wrap" aria-labelledby="dimsum">
-  <div class="grid split">
-    <div class="split__quote reveal">
+<section class="dimsum" aria-labelledby="dimsum">
+  <div class="wrap dimsum__inner">
+    <div class="dimsum__text reveal">
       <span class="meta" id="dimsum">Dim Sum</span>
-      <blockquote><p style="margin:14px 0 0">Dim Sum braucht <em>Zeit.</em> Rund zwanzig Minuten, um genau zu sein.</p></blockquote>
+      <blockquote><p>Dim Sum braucht <em>Zeit.</em> Rund zwanzig Minuten, um genau zu sein.</p></blockquote>
       <p class="lead">Siu Mai und Jiao Zi kommen frisch aus dem Bambuskorb. Rechnen Sie bei gedämpften Vorspeisen mit etwa 20 Minuten Wartezeit.</p>
       <p><a class="link" href="/speisekarte/#k-vorspeisen">Vorspeisen ansehen <span class="arrow" aria-hidden="true">→</span></a></p>
     </div>
-    <div class="split__media">
-      <figure class="reveal steamy">
-        <img src="/assets/img/menu/siu-mai.jpg" alt="Gedämpfte Siu Mai im Bambuskorb mit Chilisauce" width="550" height="440" loading="lazy">
-        <span class="steam" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-        <figcaption class="caption"><span>Nr. 7 · Gedämpfte Siu Mai</span><span class="num">CHF {chf(find('7')[1]['price'])}</span></figcaption>
-      </figure>
-      <figure class="reveal steamy">
-        <img src="/assets/img/menu/jiao-zi.jpg" alt="Gedämpfte Jiao Zi im Bambuskorb" width="550" height="440" loading="lazy">
-        <span class="steam steam--late" aria-hidden="true"><i></i><i></i><i></i></span>
-        <figcaption class="caption"><span>Nr. 8 · Gedämpfte Jiao Zi</span><span class="num">CHF {chf(find('8')[1]['price'])}</span></figcaption>
-      </figure>
-    </div>
+  </div>
+  <div class="dimsum__media">
+    <figure class="steamy">
+      <img src="/assets/img/menu/siu-mai.jpg" alt="Gedämpfte Siu Mai im Bambuskorb mit Chilisauce" width="550" height="440" loading="lazy">
+      <span class="steam" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <figcaption><span>Nr. 7 · Gedämpfte Siu Mai</span><span class="num">CHF {chf(find('7')[1]['price'])}</span></figcaption>
+    </figure>
+    <figure class="steamy">
+      <img src="/assets/img/menu/jiao-zi.jpg" alt="Gedämpfte Jiao Zi im Bambuskorb" width="550" height="440" loading="lazy">
+      <span class="steam steam--late" aria-hidden="true"><i></i><i></i><i></i></span>
+      <figcaption><span>Nr. 8 · Gedämpfte Jiao Zi</span><span class="num">CHF {chf(find('8')[1]['price'])}</span></figcaption>
+    </figure>
   </div>
 </section>
 

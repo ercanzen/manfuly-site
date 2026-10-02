@@ -716,61 +716,6 @@ body.menu-open {
   margin-top: 28px;
 }
 
-/* ---------- Editorial split ---------- */
-.split {
-  row-gap: 40px;
-}
-.split__quote {
-  grid-column: 1 / span 6;
-  align-self: start;
-  position: sticky;
-  top: calc(var(--header-h) + 40px);
-}
-.split__quote blockquote {
-  margin: 0;
-  font-family: var(--serif);
-  font-weight: 300;
-  font-variation-settings: "opsz" 144;
-  font-size: clamp(36px, 4.6vw, 72px);
-  line-height: 1.02;
-  letter-spacing: -0.03em;
-}
-.split__quote blockquote em {
-  color: var(--accent);
-}
-.split__quote p {
-  margin: 28px 0 0;
-}
-.split__media {
-  grid-column: 8 / -1;
-  display: grid;
-  gap: var(--gutter);
-}
-.split__media figure {
-  margin: 0;
-}
-.split__media figure:nth-child(2) {
-  width: 72%;
-  margin-left: -28%;
-}
-.split__media img {
-  width: 100%;
-  aspect-ratio: 5 / 4;
-  object-fit: cover;
-  border-radius: 2px;
-}
-@media (max-width: 899px) {
-  .split__quote,
-  .split__media {
-    grid-column: 1 / -1;
-    position: static;
-  }
-  .split__media figure:nth-child(2) {
-    width: 78%;
-    margin-left: auto;
-  }
-}
-
 /* ---------- How to order (dark block) ---------- */
 .dark {
   background: var(--ink);
@@ -1345,22 +1290,7 @@ body.menu-open {
   color: var(--accent-light);
 }
 
-/* Portrait hero photo (the chef): never cropped, sized to fit the first screen */
-.hero__media--portrait {
-  justify-self: end;
-  width: min(100%, calc((100svh - var(--header-h) - 110px) * 834 / 947));
-}
-.hero__media--portrait img {
-  aspect-ratio: 834 / 947;
-  max-height: none;
-  min-height: 0;
-}
-@media (max-width: 899px) {
-  .hero__media--portrait {
-    justify-self: stretch;
-    width: 100%;
-  }
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   .steam {
@@ -1375,5 +1305,186 @@ body.menu-open {
 @media (max-width: 1099px) {
   body:has(.cart-bar:not([hidden])) .toast {
     bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ---------- Embedded hero: photo bleeds to the edge and melts into the paper ---------- */
+.hero-embed {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: clamp(560px, calc(100svh - var(--header-h) - 38px), 940px);
+  overflow: hidden;
+}
+.hero-embed__photo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 54vw;
+  margin: 0;
+}
+.hero-embed__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 82%; /* keep the wok in frame; the hood may crop */
+}
+/* soft blend into the paper on the left and at the bottom */
+.hero-embed__photo::before,
+.hero-embed__photo::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+.hero-embed__photo::before {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 42%;
+  background: linear-gradient(90deg, var(--paper) 0%, rgba(245, 239, 228, 0.85) 25%, rgba(245, 239, 228, 0) 100%);
+}
+.hero-embed__photo::after {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 22%;
+  background: linear-gradient(0deg, var(--paper) 0%, rgba(245, 239, 228, 0) 100%);
+}
+.hero-embed__inner {
+  position: relative;
+  padding-top: clamp(40px, 6vw, 80px);
+  padding-bottom: clamp(40px, 6vw, 80px);
+}
+.hero-embed__text {
+  max-width: min(640px, 48vw);
+}
+.hero-embed__text .lead {
+  margin: 0 0 32px;
+}
+@media (max-width: 899px) {
+  .hero-embed {
+    display: block;
+    min-height: 0;
+  }
+  .hero-embed__photo {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+  .hero-embed__photo img {
+    height: auto;
+    aspect-ratio: 834 / 947;
+  }
+  .hero-embed__photo::before {
+    display: none;
+  }
+  .hero-embed__photo::after {
+    height: 30%;
+  }
+  .hero-embed__inner {
+    margin-top: -40px;
+    padding-top: 0;
+  }
+  .hero-embed__text {
+    max-width: none;
+  }
+}
+
+/* ---------- Dim sum: text left, photos bleed to the right edge ---------- */
+.dimsum {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: clamp(72px, 10vw, 160px);
+}
+.dimsum__inner {
+  grid-row: 1;
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+}
+.dimsum__text {
+  max-width: min(560px, 44vw);
+  position: sticky;
+  top: calc(var(--header-h) + 40px);
+}
+.dimsum__text blockquote {
+  margin: 14px 0 0;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-variation-settings: "opsz" 144;
+  font-size: clamp(36px, 4.4vw, 68px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+.dimsum__text blockquote p {
+  margin: 0;
+}
+.dimsum__text blockquote em {
+  color: var(--accent);
+}
+.dimsum__text .lead {
+  margin: 28px 0 22px;
+}
+.dimsum__media {
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: end;
+  width: min(50vw, 760px);
+  display: grid;
+}
+.dimsum__media figure {
+  position: relative;
+  margin: 0;
+}
+.dimsum__media img {
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  object-fit: cover;
+}
+.dimsum__media figure::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 30%;
+  z-index: 1;
+  background: linear-gradient(90deg, var(--paper) 0%, rgba(245, 239, 228, 0) 100%);
+  pointer-events: none;
+}
+.dimsum__media figcaption {
+  position: absolute;
+  left: 34%;
+  right: 20px;
+  bottom: 16px;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+}
+@media (max-width: 899px) {
+  .dimsum__inner,
+  .dimsum__media {
+    grid-row: auto;
+  }
+  .dimsum__text {
+    max-width: none;
+    position: static;
+  }
+  .dimsum__media {
+    width: 100%;
+    margin-top: 32px;
+  }
+  .dimsum__media figure::before {
+    display: none;
+  }
+  .dimsum__media figcaption {
+    left: 16px;
   }
 }
