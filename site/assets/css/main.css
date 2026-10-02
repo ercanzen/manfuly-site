@@ -1488,3 +1488,20 @@ body.menu-open {
     left: 16px;
   }
 }
+
+/* ---------- Small layout helpers (no inline styles, CSP-friendly) ---------- */
+.h2--after-meta {
+  margin-top: 14px;
+}
+.res__phone {
+  margin: 12px 0 4px;
+}
+.res__phone a {
+  text-decoration: none;
+}
+.address-block {
+  margin: 12px 0 36px;
+}
+.page-head__cta {
+  margin-top: 32px;
+}

@@ -1,0 +1,4 @@
+Contact: mailto:mann.fuly@gmail.com
+Expires: 2027-10-01T00:00:00.000Z
+Preferred-Languages: de, en
+Canonical: https://www.manfuly.ch/.well-known/security.txt

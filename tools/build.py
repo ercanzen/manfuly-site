@@ -23,9 +23,28 @@ WHATSAPP = "41795504481"
 WHATSAPP_LABEL = "079 550 44 81"
 STREET = "Bettlachstrasse 36"
 CITY = "2540 Grenchen"
-VERSION = "6"
+VERSION = "7"
 
 e = html.escape
+
+# Content-Security-Policy as a meta tag (GitHub Pages cannot set response headers).
+# Only our own files may run or load; the Google map iframe is the single exception.
+# frame-ancestors / report-uri are not supported in a meta tag.
+CSP = "; ".join(
+    [
+        "default-src 'self'",
+        "script-src 'self'",
+        "style-src 'self'",
+        "img-src 'self' data:",
+        "font-src 'self'",
+        "connect-src 'self'",
+        "frame-src https://maps.google.com https://www.google.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "upgrade-insecure-requests",
+    ]
+)
 
 def page_head(meta, title_html, aside):
     """Typographic page head for inner pages (no imagery, so photos are not repeated)."""
@@ -110,6 +129,8 @@ def head(title, desc, path, extra_css="", jsonld=None):
 <title>{e(title)}</title>
 <meta name="description" content="{e(desc)}">
 <link rel="canonical" href="{url}">
+<meta http-equiv="Content-Security-Policy" content="{CSP}">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#f5efe4">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Man Fu Ly">
@@ -336,7 +357,7 @@ def page_home():
 <section class="dark" aria-labelledby="bestellen">
   <div class="wrap">
     <span class="meta">Bestellen zum Abholen</span>
-    <h2 class="h2" id="bestellen" style="margin-top:14px">Bestellt in drei <em>Schritten.</em></h2>
+    <h2 class="h2 h2--after-meta" id="bestellen">Bestellt in drei <em>Schritten.</em></h2>
     <ol class="steps">
       <li class="reveal"><span class="steps__nr num">01</span><h3>Auswählen</h3><p>Gerichte aus der Speisekarte in den Warenkorb legen.</p></li>
       <li class="reveal"><span class="steps__nr num">02</span><h3>Per WhatsApp senden</h3><p>Name, Telefon und Abholzeit eintragen. Die Bestellung geht als Nachricht direkt an uns.</p></li>
@@ -586,7 +607,7 @@ def page_reservation():
     </form>
     <aside class="res__aside reveal">
       <span class="meta">Lieber persönlich?</span>
-      <p class="h3" style="margin:12px 0 4px"><a href="tel:{PHONE}" class="num" style="text-decoration:none">{PHONE_LABEL}</a></p>
+      <p class="h3 res__phone"><a href="tel:{PHONE}" class="num">{PHONE_LABEL}</a></p>
       <p class="form-note">Während der Öffnungszeiten erreichen Sie uns auch telefonisch.</p>
       {HOURS_TABLE}
     </aside>
@@ -622,7 +643,7 @@ def page_contact():
   <div class="grid visit">
     <div class="visit__info reveal">
       <span class="meta" id="anfahrt">Adresse</span>
-      <p class="h3" style="margin:12px 0 36px">China-Restaurant Man Fu Ly<br>{STREET}<br>{CITY}</p>
+      <p class="h3 address-block">China-Restaurant Man Fu Ly<br>{STREET}<br>{CITY}</p>
       <span class="meta">Öffnungszeiten</span>
       {HOURS_TABLE}
     </div>
@@ -693,7 +714,7 @@ def page_404():
     <h1 class="display">Nicht <em>gefunden</em></h1>
     <p class="page-head__aside">Diese Seite gibt es nicht. Vielleicht suchen Sie die Speisekarte?</p>
   </div>
-  <p style="margin-top:32px"><a class="btn" href="/speisekarte/">Zur Speisekarte</a></p>
+  <p class="page-head__cta"><a class="btn" href="/speisekarte/">Zur Speisekarte</a></p>
 </section>
 </main>
 """
@@ -717,6 +738,15 @@ def main():
         + "</urlset>\n",
     )
     write("CNAME", "www.manfuly.ch\n")
+    # RFC 9116: where to report a security problem. Renew "Expires" yearly.
+    write(
+        ".well-known/security.txt",
+        f"Contact: mailto:{EMAIL}\n"
+        "Expires: 2027-10-01T00:00:00.000Z\n"
+        "Preferred-Languages: de, en\n"
+        f"Canonical: {SITE}/.well-known/security.txt\n",
+    )
+    write(".nojekyll", "")
     print(f"built {OUT} ({TOTAL} dishes)")
 
 

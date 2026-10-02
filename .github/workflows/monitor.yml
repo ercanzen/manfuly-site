@@ -1,0 +1,67 @@
+name: Weekly site check
+
+# Checks the live site once a week. If anything is wrong the run fails and
+# GitHub emails the repository owner. No third-party actions, no secrets.
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SITE: https://www.manfuly.ch
+      WHATSAPP: "41795504481"
+    steps:
+      - name: Check live site
+        shell: bash
+        run: |
+          set -u
+          fail=0
+          err() { echo "::error::$1"; fail=1; }
+
+          # 1. HTTP must redirect to HTTPS, and every page must load
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://www.manfuly.ch/)
+          [ "$code" = "301" ] || err "http:// does not redirect to https:// (got $code)"
+          for p in / /speisekarte/ /reservierung/ /kontakt/ /impressum/; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$SITE$p")
+            [ "$code" = "200" ] || err "$p returned $code"
+          done
+
+          # 2. Orders must still go to the restaurant's WhatsApp number
+          curl -s "$SITE/assets/js/main.js" | grep -q "whatsapp: \"$WHATSAPP\"" \
+            || err "WhatsApp number in main.js changed or missing"
+          curl -s "$SITE/" | grep -q "wa.me/$WHATSAPP" \
+            || err "WhatsApp link on the home page changed or missing"
+
+          # 3. No foreign scripts, and the security policy is still in place
+          for p in / /speisekarte/ /reservierung/ /kontakt/; do
+            html=$(curl -s "$SITE$p")
+            echo "$html" | grep -Eo '<script[^>]+src="[^"]+"' | grep -Ev 'src="/assets/js/' \
+              && err "$p loads a script from outside the site"
+            echo "$html" | grep -q 'http-equiv="Content-Security-Policy"' \
+              || err "$p has no Content-Security-Policy"
+          done
+
+          # 4. security.txt must exist and not expire within 30 days
+          exp=$(curl -s "$SITE/.well-known/security.txt" | sed -n 's/^Expires: //p')
+          if [ -z "$exp" ]; then
+            err "security.txt missing"
+          elif [ "$(date -d "$exp" +%s)" -lt "$(date -d '+30 days' +%s)" ]; then
+            err "security.txt expires on $exp, renew it in tools/build.py"
+          fi
+
+          # 5. TLS certificate must be valid for at least 14 more days
+          end=$(echo | openssl s_client -servername www.manfuly.ch -connect www.manfuly.ch:443 2>/dev/null \
+                | openssl x509 -noout -enddate | cut -d= -f2)
+          if [ -z "$end" ] || [ "$(date -d "$end" +%s)" -lt "$(date -d '+14 days' +%s)" ]; then
+            err "TLS certificate expires soon or could not be read ($end)"
+          fi
+
+          [ "$fail" = 0 ] && echo "All checks passed."
+          exit $fail
