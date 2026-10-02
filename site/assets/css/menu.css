@@ -4,55 +4,6 @@
   padding-bottom: clamp(20px, 3vw, 36px);
 }
 
-/* Photo rail */
-.rail {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(200px, 64vw);
-  gap: 14px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-padding: 0 var(--margin);
-  margin: 0 calc(-1 * var(--margin));
-  padding: 0 var(--margin) 12px;
-  scrollbar-width: thin;
-}
-@media (min-width: 700px) {
-  .rail {
-    grid-auto-columns: minmax(230px, 26vw);
-  }
-}
-@media (min-width: 1200px) {
-  .rail {
-    grid-auto-flow: row;
-    grid-template-columns: repeat(5, 1fr);
-    margin: 0;
-    padding: 0;
-    overflow: visible;
-  }
-}
-.rail__card {
-  scroll-snap-align: start;
-  text-decoration: none;
-}
-.rail__card img {
-  width: 100%;
-  aspect-ratio: 5 / 4;
-  object-fit: cover;
-  border-radius: 2px;
-  transition: transform 0.6s var(--ease);
-}
-.rail__card:hover img {
-  transform: scale(1.015);
-}
-.rail__card .caption {
-  color: var(--ink);
-  font-size: 14px;
-}
-.rail__card .caption .num {
-  color: var(--muted);
-}
-
 /* Toolbar */
 .toolbar {
   position: sticky;

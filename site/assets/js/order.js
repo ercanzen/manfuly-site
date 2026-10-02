@@ -285,7 +285,6 @@
   var toggles = document.querySelectorAll(".toggle");
   var cats = document.querySelectorAll(".cat");
   var empty = document.querySelector(".empty");
-  var rail = document.querySelector(".rail");
   var active = { hot: false, ss: false };
 
   function norm(s) {
@@ -309,7 +308,6 @@
       if (vis) any = true;
     });
     empty.hidden = any;
-    if (rail) rail.hidden = !!(term || active.hot || active.ss);
   }
   q.addEventListener("input", apply);
   toggles.forEach(function (b) {

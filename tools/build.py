@@ -380,14 +380,10 @@ def dish_li(it):
     if ss:
         tags += '<span class="tag">süss-sauer</span>'
     search = f"{nr} {it['name']} {it.get('desc', '')}".lower()
-    img = (
-        f'<img class="dish__img" src="{it["img"]}" alt="{e(clean_name(it["name"]))}" width="550" height="440" loading="lazy">'
-        if it.get("img")
-        else ""
-    )
-    return f"""<li class="dish{' dish--photo' if it.get('img') else ''}" id="g-{slug(it['key'])}" data-key="{e(it['key'])}" data-nr="{e(nr)}" data-name="{e(it['name'])}" data-price="{it['price']}" data-hot="{str(hot).lower()}" data-ss="{str(ss).lower()}" data-search="{e(search)}">
+    # The Speisekarte is text-only by choice; photos are used on the home page only.
+    return f"""<li class="dish" id="g-{slug(it['key'])}" data-key="{e(it['key'])}" data-nr="{e(nr)}" data-name="{e(it['name'])}" data-price="{it['price']}" data-hot="{str(hot).lower()}" data-ss="{str(ss).lower()}" data-search="{e(search)}">
   <span class="dish__nr num">{e(nr)}</span>
-  <span class="dish__main">{img}<span class="dish__body"><span class="dish__name">{e(clean_name(it['name']))}</span>{f'<span class="dish__desc">{e(it["desc"])}</span>' if it.get('desc') else ''}{f'<span class="dish__tags">{tags}</span>' if tags else ''}</span></span>
+  <span class="dish__main"><span class="dish__body"><span class="dish__name">{e(clean_name(it['name']))}</span>{f'<span class="dish__desc">{e(it["desc"])}</span>' if it.get('desc') else ''}{f'<span class="dish__tags">{tags}</span>' if tags else ''}</span></span>
   <span class="dish__price num">{chf(it['price'])}</span>
   <span class="dish__act" data-act></span>
 </li>"""
@@ -404,18 +400,6 @@ def page_menu():
   <ol class="dishes">{''.join(dish_li(it) for it in c['items'])}</ol>
 </section>"""
         for c in cats
-    )
-    seen, feature = set(), []
-    for _, it in ALL_ITEMS:
-        if it.get("img") and it["img"] not in seen:
-            seen.add(it["img"])
-            feature.append(it)
-    rail = "".join(
-        f"""<a class="rail__card" href="#g-{slug(it['key'])}">
-  <img src="{it['img']}" alt="{e(clean_name(it['name']))}" width="550" height="440" loading="lazy">
-  <span class="caption"><span>{e(it['nr'])}. {e(re.sub(r'\s*\(.*\)$', '', clean_name(it['name'])))}</span><span class="num">{chf(it['price'])}</span></span>
-</a>"""
-        for it in feature
     )
     menu_ld = {
         "@context": "https://schema.org",
@@ -457,7 +441,6 @@ def page_menu():
   </div>
 </section>
 
-<div class="wrap"><div class="rail" aria-label="Gerichte mit Foto">{rail}</div></div>
 
 <div class="toolbar" id="toolbar">
   <div class="wrap">
