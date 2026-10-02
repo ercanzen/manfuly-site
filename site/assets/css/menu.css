@@ -80,7 +80,7 @@
 }
 .chip.is-active {
   color: var(--ink);
-  border-bottom-color: var(--red);
+  border-bottom-color: var(--accent);
 }
 @media (max-width: 480px) {
   .toggle {
@@ -139,7 +139,7 @@
   transition: background 0.6s;
 }
 .dish.is-target {
-  background: rgba(179, 38, 30, 0.07);
+  background: rgba(126, 157, 63, 0.14);
 }
 .dish__nr {
   font-size: 13px;
@@ -493,11 +493,11 @@
     padding: 0 20px 0 10px;
     border: 0;
     border-radius: 999px;
-    background: var(--red);
+    background: var(--accent);
     color: var(--on-dark);
     font-size: 16px;
     font-weight: 600;
-    box-shadow: 0 12px 30px rgba(143, 29, 23, 0.35);
+    box-shadow: 0 12px 30px rgba(63, 86, 24, 0.35);
     cursor: pointer;
   }
   .cart-bar > span:nth-child(2) {
@@ -512,7 +512,7 @@
     padding: 0 8px;
     border-radius: 999px;
     background: var(--on-dark);
-    color: var(--red);
+    color: var(--accent);
   }
   .menu-page {
     padding-bottom: 80px;

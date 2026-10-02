@@ -23,7 +23,7 @@ WHATSAPP = "41795504481"
 WHATSAPP_LABEL = "079 550 44 81"
 STREET = "Bettlachstrasse 36"
 CITY = "2540 Grenchen"
-VERSION = "3"
+VERSION = "4"
 
 e = html.escape
 
@@ -178,8 +178,8 @@ def header(path):
 <header class="header">
   <div class="wrap header__inner">
     <a class="brand" href="/" aria-label="Man Fu Ly, zur Startseite">
-      <img src="/assets/brand/logo.svg" alt="Man Fu Ly China-Restaurant Grenchen" width="356" height="120">
-      <img class="brand__inv" src="/assets/brand/logo-invers.svg" alt="" width="356" height="120">
+      <img src="/assets/brand/logo.svg" alt="Man Fu Ly China-Restaurant Grenchen" width="448" height="120">
+      <img class="brand__inv" src="/assets/brand/logo-invers.svg" alt="" width="448" height="120">
     </a>
     <nav class="nav" aria-label="Hauptnavigation">{links}</nav>
     <a class="btn header__cta" href="/speisekarte/">Online bestellen</a>
@@ -201,7 +201,7 @@ def footer(extra_js=""):
     return f"""<footer class="footer">
   <div class="wrap">
     <div class="grid footer__top">
-      <div class="footer__seal"><img src="/assets/brand/seal.svg" alt="" width="200" height="200"></div>
+      <div class="footer__seal"><img src="/assets/brand/symbol-badge.svg" alt="" width="200" height="200"></div>
       <div class="footer__col">
         <span class="meta">Adresse</span>
         <span>China-Restaurant Man Fu Ly</span>
@@ -239,7 +239,7 @@ RESTAURANT_LD = {
     "name": "China-Restaurant Man Fu Ly",
     "url": SITE + "/",
     "image": SITE + "/assets/img/og.jpg",
-    "logo": SITE + "/assets/brand/seal.svg",
+    "logo": SITE + "/assets/brand/symbol.svg",
     "telephone": PHONE,
     "email": EMAIL,
     "servesCuisine": ["Chinesisch", "Kantonesisch"],
