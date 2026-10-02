@@ -34,18 +34,19 @@ jobs:
           done
 
           # 2. Orders must still go to the restaurant's WhatsApp number
-          curl -s "$SITE/assets/js/main.js" | grep -q "whatsapp: \"$WHATSAPP\"" \
-            || err "WhatsApp number in main.js changed or missing"
-          curl -s "$SITE/" | grep -q "wa.me/$WHATSAPP" \
-            || err "WhatsApp link on the home page changed or missing"
+          # (here-strings instead of pipes: grep -q exits early and would
+          # trip pipefail with SIGPIPE on large pages)
+          js=$(curl -s "$SITE/assets/js/main.js")
+          grep -q "whatsapp: \"$WHATSAPP\"" <<< "$js"             || err "WhatsApp number in main.js changed or missing"
+          home=$(curl -s "$SITE/")
+          grep -q "wa.me/$WHATSAPP" <<< "$home"             || err "WhatsApp link on the home page changed or missing"
 
           # 3. No foreign scripts, and the security policy is still in place
           for p in / /speisekarte/ /reservierung/ /kontakt/; do
             html=$(curl -s "$SITE$p")
-            echo "$html" | grep -Eo '<script[^>]+src="[^"]+"' | grep -Ev 'src="/assets/js/' \
-              && err "$p loads a script from outside the site"
-            echo "$html" | grep -q 'http-equiv="Content-Security-Policy"' \
-              || err "$p has no Content-Security-Policy"
+            foreign=$(grep -Eo '<script[^>]+src="[^"]+"' <<< "$html" | grep -Ev 'src="/assets/js/' || true)
+            [ -z "$foreign" ] || err "$p loads a script from outside the site: $foreign"
+            grep -q 'http-equiv="Content-Security-Policy"' <<< "$html"               || err "$p has no Content-Security-Policy"
           done
 
           # 4. security.txt must exist and not expire within 30 days
