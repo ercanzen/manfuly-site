@@ -22,7 +22,9 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/main.css?v=2">
+<link rel="stylesheet" href="/assets/css/main.css?v=3">
+<link rel="preload" as="image" href="/assets/video/kueche-1600.jpg" media="(min-aspect-ratio: 4/5)" fetchpriority="high">
+<link rel="preload" as="image" href="/assets/video/kueche-hoch.jpg" media="(max-aspect-ratio: 4/5)" fetchpriority="high">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Restaurant", "name": "China-Restaurant Man Fu Ly", "url": "https://www.manfuly.ch/", "image": "https://www.manfuly.ch/assets/img/og.jpg", "logo": "https://www.manfuly.ch/assets/brand/seal.svg", "telephone": "+41325554808", "email": "mann.fuly@gmail.com", "servesCuisine": ["Chinesisch", "Kantonesisch"], "priceRange": "CHF 15–25", "address": {"@type": "PostalAddress", "streetAddress": "Bettlachstrasse 36", "postalCode": "2540", "addressLocality": "Grenchen", "addressRegion": "SO", "addressCountry": "CH"}, "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:00", "closes": "14:00"}, {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "17:30", "closes": "22:00"}], "hasMenu": "https://www.manfuly.ch/speisekarte/", "acceptsReservations": "True"}</script>
 </head>
 <body>
@@ -54,20 +56,30 @@
   </div>
 </div>
 <main id="main">
-<section class="hero wrap" aria-labelledby="hero-title">
-  <div class="grid hero__row">
-    <div class="hero__text">
+<section class="film" aria-labelledby="hero-title">
+  <div class="film__bg" aria-hidden="true">
+    <picture>
+      <source media="(max-aspect-ratio: 4/5)" srcset="/assets/video/kueche-hoch.jpg">
+      <img class="film__poster" src="/assets/video/kueche-1600.jpg" alt="" width="1600" height="900" fetchpriority="high">
+    </picture>
+    <video class="bgvid" muted loop playsinline preload="none" data-src="/assets/video/kueche-1600.mp4" data-src-portrait="/assets/video/kueche-hoch.mp4"></video>
+    <span class="film__scrim"></span>
+  </div>
+  <div class="wrap film__inner">
+    <div class="film__text">
       <span class="meta">China-Restaurant in Grenchen</span>
-      <h1 class="hero__title" id="hero-title">Chinesische Küche aus Wok und <em>Bambuskorb.</em></h1>
+      <h1 class="film__title" id="hero-title">Chinesische Küche aus Wok und <em>Bambuskorb.</em></h1>
       <p class="lead">Im Restaurant an der Bettlachstrasse 36 oder zum Mitnehmen. Online bestellen und frisch zubereitet abholen.</p>
       <div class="hero__actions">
         <a class="btn" href="/speisekarte/">Online bestellen</a>
         <a class="link" href="/reservierung/">Tisch reservieren <span class="arrow" aria-hidden="true">→</span></a>
       </div>
     </div>
-    <figure class="hero__media">
-      <img src="/assets/img/hero-1200.jpg" srcset="/assets/img/hero-800.jpg 800w, /assets/img/hero-1200.jpg 1200w, /assets/img/hero.jpg 1920w" sizes="(min-width: 900px) 50vw, 100vw" alt="Gedeckter Tisch mit Ente, Frühlingsrollen, Dim Sum, gebratenen Nudeln und Wan Tan" width="1920" height="1536" fetchpriority="high">
-    </figure>
+    <div class="film__foot meta">
+      <span class="status" data-status>Öffnungszeiten</span>
+      <span>Bettlachstrasse 36, Grenchen</span>
+      <button type="button" class="vid-toggle" data-video-toggle aria-pressed="false"><span class="vid-toggle__ico" aria-hidden="true"></span><span class="vid-toggle__txt">Video anhalten</span></button>
+    </div>
   </div>
 </section>
 
@@ -133,19 +145,24 @@
       <p><a class="link" href="/speisekarte/#k-vorspeisen">Vorspeisen ansehen <span class="arrow" aria-hidden="true">→</span></a></p>
     </div>
     <div class="split__media">
-      <figure class="reveal">
+      <figure class="reveal steamy">
         <img src="/assets/img/menu/siu-mai.jpg" alt="Gedämpfte Siu Mai im Bambuskorb mit Chilisauce" width="550" height="440" loading="lazy">
+        <span class="steam" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <figcaption class="caption"><span>Nr. 7 · Gedämpfte Siu Mai</span><span class="num">CHF 7.50</span></figcaption>
       </figure>
-      <figure class="reveal">
+      <figure class="reveal steamy">
         <img src="/assets/img/menu/jiao-zi.jpg" alt="Gedämpfte Jiao Zi im Bambuskorb" width="550" height="440" loading="lazy">
+        <span class="steam steam--late" aria-hidden="true"><i></i><i></i><i></i></span>
         <figcaption class="caption"><span>Nr. 8 · Gedämpfte Jiao Zi</span><span class="num">CHF 7.50</span></figcaption>
       </figure>
     </div>
   </div>
 </section>
 
-<section class="dark" aria-labelledby="bestellen">
+<section class="dark dark--film" aria-labelledby="bestellen">
+  <div class="dark__bg" aria-hidden="true">
+    <video class="bgvid" muted loop playsinline preload="none" poster="/assets/video/kueche-unscharf.jpg" data-src="/assets/video/kueche-unscharf.mp4"></video>
+  </div>
   <div class="wrap">
     <span class="meta">Bestellen zum Abholen</span>
     <h2 class="h2" id="bestellen" style="margin-top:14px">Bestellt in drei <em>Schritten.</em></h2>
@@ -160,6 +177,11 @@
     </div>
   </div>
 </section>
+
+<figure class="band" aria-label="Gebackenes Poulet, gebratene Nudeln und Frühlingsrollen auf dem Tisch">
+  <img class="band__img" src="/assets/img/band-1600.jpg" srcset="/assets/img/band-900.jpg 900w, /assets/img/band-1600.jpg 1600w" sizes="100vw" alt="" width="1600" height="900" loading="lazy" data-parallax>
+  <figcaption class="wrap band__cap"><span class="band__line">Frisch aus dem Wok,<br><em>jeden Tag ausser Montag.</em></span></figcaption>
+</figure>
 
 <section class="section wrap" aria-labelledby="besuch">
   <div class="grid section__head reveal">
@@ -218,6 +240,6 @@
     </div>
   </div>
 </footer>
-<script src="/assets/js/main.js?v=2"></script>
+<script src="/assets/js/main.js?v=3"></script>
 </body>
 </html>

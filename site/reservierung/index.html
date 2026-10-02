@@ -22,7 +22,9 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/main.css?v=2">
+<link rel="stylesheet" href="/assets/css/main.css?v=3">
+<link rel="preload" as="image" href="/assets/video/kueche-1600.jpg" media="(min-aspect-ratio: 4/5)" fetchpriority="high">
+<link rel="preload" as="image" href="/assets/video/kueche-hoch.jpg" media="(max-aspect-ratio: 4/5)" fetchpriority="high">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Restaurant", "name": "China-Restaurant Man Fu Ly", "url": "https://www.manfuly.ch/", "image": "https://www.manfuly.ch/assets/img/og.jpg", "logo": "https://www.manfuly.ch/assets/brand/seal.svg", "telephone": "+41325554808", "email": "mann.fuly@gmail.com", "servesCuisine": ["Chinesisch", "Kantonesisch"], "priceRange": "CHF 15–25", "address": {"@type": "PostalAddress", "streetAddress": "Bettlachstrasse 36", "postalCode": "2540", "addressLocality": "Grenchen", "addressRegion": "SO", "addressCountry": "CH"}, "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:00", "closes": "14:00"}, {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "17:30", "closes": "22:00"}], "hasMenu": "https://www.manfuly.ch/speisekarte/", "acceptsReservations": "True"}</script>
 </head>
 <body>
@@ -54,11 +56,22 @@
   </div>
 </div>
 <main id="main">
-<section class="page-head wrap">
-  <span class="meta">Man Fu Ly · Reservierung</span>
-  <div class="grid page-head__row">
-    <h1 class="display">Tisch <em>reservieren</em></h1>
-    <p class="page-head__aside">Wählen Sie Tag, Zeit und Anzahl Personen. Die Anfrage geht per WhatsApp an uns, wir bestätigen so schnell wie möglich.</p>
+<section class="film film--page" aria-labelledby="page-title">
+  <div class="film__bg" aria-hidden="true">
+    <picture>
+      <source media="(max-aspect-ratio: 4/5)" srcset="/assets/video/kueche-hoch.jpg">
+      <img class="film__poster" src="/assets/video/kueche-1600.jpg" alt="" width="1600" height="900" fetchpriority="high">
+    </picture>
+    <video class="bgvid" muted loop playsinline preload="none" data-src="/assets/video/kueche-1600.mp4" data-src-portrait="/assets/video/kueche-hoch.mp4"></video>
+    <span class="film__scrim"></span>
+  </div>
+  <div class="wrap film__inner">
+    <div class="film__text">
+      <span class="meta">Man Fu Ly · Reservierung</span>
+      <h1 class="display" id="page-title">Tisch <em>reservieren</em></h1>
+      <p class="lead">Wählen Sie Tag, Zeit und Anzahl Personen. Die Anfrage geht per WhatsApp an uns, wir bestätigen so schnell wie möglich.</p>
+    </div>
+    <div class="film__foot meta"><span class="status" data-status>Öffnungszeiten</span><button type="button" class="vid-toggle" data-video-toggle aria-pressed="false"><span class="vid-toggle__ico" aria-hidden="true"></span><span class="vid-toggle__txt">Video anhalten</span></button></div>
   </div>
 </section>
 
@@ -133,7 +146,7 @@
     </div>
   </div>
 </footer>
-<script src="/assets/js/main.js?v=2"></script>
-<script src="/assets/js/reservation.js?v=2"></script>
+<script src="/assets/js/main.js?v=3"></script>
+<script src="/assets/js/reservation.js?v=3"></script>
 </body>
 </html>

@@ -1230,3 +1230,302 @@ body.menu-open {
     display: block;
   }
 }
+
+/* ---------- Film: full-bleed video background ---------- */
+.film {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(560px, calc(100svh - var(--header-h) - 38px), 960px);
+  color: var(--on-dark);
+  background: var(--ink);
+  overflow: hidden;
+}
+.film__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.film__bg picture,
+.film__poster,
+.bgvid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bgvid {
+  opacity: 0;
+  transition: opacity 1.2s var(--ease);
+}
+.bgvid.is-playing {
+  opacity: 1;
+}
+.film__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(26, 20, 16, 0.25) 0%, rgba(26, 20, 16, 0) 30%),
+    linear-gradient(0deg, rgba(26, 20, 16, 0.88) 0%, rgba(26, 20, 16, 0.55) 38%, rgba(26, 20, 16, 0.08) 75%),
+    linear-gradient(90deg, rgba(26, 20, 16, 0.55) 0%, rgba(26, 20, 16, 0) 60%);
+}
+.film__inner {
+  position: relative;
+  padding-top: 96px;
+  padding-bottom: clamp(24px, 3vw, 36px);
+}
+.film__text {
+  max-width: 760px;
+}
+.film .meta {
+  color: rgba(245, 239, 228, 0.78);
+}
+.film__title {
+  margin: 16px 0 22px;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-variation-settings: "opsz" 144;
+  font-size: clamp(46px, 6.6vw, 108px);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.film__title em,
+.film .display em {
+  font-style: italic;
+  font-weight: 300;
+  color: #f0b8a4;
+}
+.film .lead {
+  color: rgba(245, 239, 228, 0.9);
+  margin: 0 0 30px;
+}
+.film .link {
+  color: var(--on-dark);
+}
+.film__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 28px;
+  margin-top: clamp(40px, 6vw, 80px);
+  padding-top: 14px;
+  border-top: 1px solid rgba(245, 239, 228, 0.28);
+}
+.film__foot .vid-toggle {
+  margin-left: auto;
+}
+.film .status.is-open::before {
+  box-shadow: 0 0 0 3px rgba(84, 200, 120, 0.25);
+}
+.vid-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 14px 0 10px;
+  border: 1px solid rgba(245, 239, 228, 0.4);
+  border-radius: 999px;
+  background: rgba(26, 20, 16, 0.35);
+  color: var(--on-dark);
+  font: inherit;
+  cursor: pointer;
+}
+.vid-toggle:hover {
+  background: rgba(26, 20, 16, 0.6);
+}
+.vid-toggle__ico {
+  width: 10px;
+  height: 12px;
+  border-left: 3px solid currentColor;
+  border-right: 3px solid currentColor;
+}
+.vid-toggle[aria-pressed="true"] .vid-toggle__ico {
+  width: 0;
+  height: 0;
+  border: 0;
+  border-left: 10px solid currentColor;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+.vid-toggle[hidden] {
+  display: none;
+}
+@media (max-width: 599px) {
+  .film {
+    min-height: calc(100svh - var(--header-h) - 38px);
+  }
+  .film__scrim {
+    background:
+      linear-gradient(180deg, rgba(26, 20, 16, 0.2) 0%, rgba(26, 20, 16, 0) 25%),
+      linear-gradient(0deg, rgba(26, 20, 16, 0.92) 0%, rgba(26, 20, 16, 0.6) 45%, rgba(26, 20, 16, 0.1) 80%);
+  }
+  .film__foot {
+    font-size: 11px;
+  }
+}
+
+/* Inner page heads with the same film */
+.film--page {
+  min-height: clamp(380px, 52vh, 560px);
+}
+.film--page .display {
+  margin: 12px 0 18px;
+  font-size: clamp(56px, 9vw, 140px);
+}
+.film--page .lead {
+  margin-bottom: 0;
+  max-width: 44ch;
+}
+.film--page + section {
+  padding-top: clamp(40px, 5vw, 72px);
+}
+
+/* ---------- Steam over dim sum ---------- */
+.steamy {
+  position: relative;
+}
+.steam {
+  position: absolute;
+  left: 30%;
+  right: 6%;
+  top: -4%;
+  height: 62%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.steam i {
+  position: absolute;
+  bottom: 12%;
+  width: 36%;
+  aspect-ratio: 1 / 1.6;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.25) 55%, rgba(255, 255, 255, 0));
+  filter: blur(10px);
+  opacity: 0;
+  animation: steam 6s ease-out infinite;
+}
+.steam i:nth-child(1) {
+  left: 6%;
+  animation-delay: 0s;
+}
+.steam i:nth-child(2) {
+  left: 32%;
+  width: 42%;
+  animation-delay: 1.5s;
+}
+.steam i:nth-child(3) {
+  left: 58%;
+  animation-delay: 3s;
+}
+.steam i:nth-child(4) {
+  left: 22%;
+  width: 30%;
+  animation-delay: 4.5s;
+}
+.steam--late {
+  left: 28%;
+}
+.steam--late i {
+  animation-duration: 7s;
+}
+@keyframes steam {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 20%, 0) scale(0.7);
+  }
+  15% {
+    opacity: 0.95;
+  }
+  55% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(12%, -95%, 0) scale(1.5) rotate(8deg);
+  }
+}
+
+/* ---------- Dark section with blurred film ---------- */
+.dark--film {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.dark__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: url("../video/kueche-unscharf.jpg") center / cover no-repeat;
+  opacity: 0.32;
+}
+.dark__bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--ink) 0%, rgba(26, 20, 16, 0.35) 30%, rgba(26, 20, 16, 0.35) 70%, var(--ink) 100%);
+}
+.dark__bg .bgvid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Full-bleed photo band with gentle parallax ---------- */
+.band {
+  position: relative;
+  margin: clamp(72px, 10vw, 160px) 0 0;
+  height: clamp(340px, 62vh, 640px);
+  overflow: hidden;
+  background: var(--ink);
+}
+.band__img {
+  position: absolute;
+  left: 0;
+  top: -12%;
+  width: 100%;
+  height: 124%;
+  object-fit: cover;
+  will-change: transform;
+}
+.band::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(26, 20, 16, 0.75) 0%, rgba(26, 20, 16, 0) 55%);
+}
+.band__cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(24px, 4vw, 48px);
+  z-index: 1;
+  margin: 0 auto;
+}
+.band__line {
+  display: block;
+  color: var(--on-dark);
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(32px, 4.6vw, 72px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.band__line em {
+  font-style: italic;
+  font-weight: 300;
+  color: #f0b8a4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steam {
+    display: none;
+  }
+  .band__img {
+    transform: none !important;
+  }
+}

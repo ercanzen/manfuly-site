@@ -23,9 +23,49 @@ WHATSAPP = "41795504481"
 WHATSAPP_LABEL = "079 550 44 81"
 STREET = "Bettlachstrasse 36"
 CITY = "2540 Grenchen"
-VERSION = "2"
+VERSION = "3"
 
 e = html.escape
+
+# Full-bleed background: poster image first (fast), video swapped in by main.js when visible.
+# The clip is a camera move over the restaurant's own table photo (tools/render_video.py).
+def film_bg(eager=True):
+    load = 'fetchpriority="high"' if eager else 'loading="lazy"'
+    return f"""<div class="film__bg" aria-hidden="true">
+    <picture>
+      <source media="(max-aspect-ratio: 4/5)" srcset="/assets/video/kueche-hoch.jpg">
+      <img class="film__poster" src="/assets/video/kueche-1600.jpg" alt="" width="1600" height="900" {load}>
+    </picture>
+    <video class="bgvid" muted loop playsinline preload="none" data-src="/assets/video/kueche-1600.mp4" data-src-portrait="/assets/video/kueche-hoch.mp4"></video>
+    <span class="film__scrim"></span>
+  </div>"""
+
+
+PRELOAD_FILM = (
+    '\n<link rel="preload" as="image" href="/assets/video/kueche-1600.jpg" media="(min-aspect-ratio: 4/5)" fetchpriority="high">'
+    '\n<link rel="preload" as="image" href="/assets/video/kueche-hoch.jpg" media="(max-aspect-ratio: 4/5)" fetchpriority="high">'
+)
+
+
+VIDEO_TOGGLE = (
+    '<button type="button" class="vid-toggle" data-video-toggle aria-pressed="false">'
+    '<span class="vid-toggle__ico" aria-hidden="true"></span><span class="vid-toggle__txt">Video anhalten</span></button>'
+)
+
+
+def film_head(meta, title_html, aside):
+    return f"""<section class="film film--page" aria-labelledby="page-title">
+  {film_bg()}
+  <div class="wrap film__inner">
+    <div class="film__text">
+      <span class="meta">{meta}</span>
+      <h1 class="display" id="page-title">{title_html}</h1>
+      <p class="lead">{aside}</p>
+    </div>
+    <div class="film__foot meta"><span class="status" data-status>Öffnungszeiten</span>{VIDEO_TOGGLE}</div>
+  </div>
+</section>"""
+
 
 # Rendered into the HTML so hours are visible without JavaScript; main.js re-renders and marks today.
 _DAYS = ["Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]
@@ -259,24 +299,28 @@ def page_home():
             "Chinesische Küche aus Wok und Bambuskorb an der Bettlachstrasse 36 in Grenchen. "
             "Speisekarte mit 100 Gerichten, online bestellen per WhatsApp und Tisch reservieren.",
             "/",
+            extra_css=PRELOAD_FILM,
             jsonld=RESTAURANT_LD,
         )
         + header("/")
         + f"""<main id="main">
-<section class="hero wrap" aria-labelledby="hero-title">
-  <div class="grid hero__row">
-    <div class="hero__text">
+<section class="film" aria-labelledby="hero-title">
+  {film_bg("Kamerafahrt über einen gedeckten Tisch: Ente, Siu Mai, gebratene Nudeln, gebackenes Poulet und gebratener Reis")}
+  <div class="wrap film__inner">
+    <div class="film__text">
       <span class="meta">China-Restaurant in Grenchen</span>
-      <h1 class="hero__title" id="hero-title">Chinesische Küche aus Wok und <em>Bambuskorb.</em></h1>
+      <h1 class="film__title" id="hero-title">Chinesische Küche aus Wok und <em>Bambuskorb.</em></h1>
       <p class="lead">Im Restaurant an der Bettlachstrasse 36 oder zum Mitnehmen. Online bestellen und frisch zubereitet abholen.</p>
       <div class="hero__actions">
         <a class="btn" href="/speisekarte/">Online bestellen</a>
         <a class="link" href="/reservierung/">Tisch reservieren <span class="arrow" aria-hidden="true">→</span></a>
       </div>
     </div>
-    <figure class="hero__media">
-      <img src="/assets/img/hero-1200.jpg" srcset="/assets/img/hero-800.jpg 800w, /assets/img/hero-1200.jpg 1200w, /assets/img/hero.jpg 1920w" sizes="(min-width: 900px) 50vw, 100vw" alt="Gedeckter Tisch mit Ente, Frühlingsrollen, Dim Sum, gebratenen Nudeln und Wan Tan" width="1920" height="1536" fetchpriority="high">
-    </figure>
+    <div class="film__foot meta">
+      <span class="status" data-status>Öffnungszeiten</span>
+      <span>{STREET}, Grenchen</span>
+      {VIDEO_TOGGLE}
+    </div>
   </div>
 </section>
 
@@ -306,19 +350,24 @@ def page_home():
       <p><a class="link" href="/speisekarte/#k-vorspeisen">Vorspeisen ansehen <span class="arrow" aria-hidden="true">→</span></a></p>
     </div>
     <div class="split__media">
-      <figure class="reveal">
+      <figure class="reveal steamy">
         <img src="/assets/img/menu/siu-mai.jpg" alt="Gedämpfte Siu Mai im Bambuskorb mit Chilisauce" width="550" height="440" loading="lazy">
+        <span class="steam" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <figcaption class="caption"><span>Nr. 7 · Gedämpfte Siu Mai</span><span class="num">CHF {chf(find('7')[1]['price'])}</span></figcaption>
       </figure>
-      <figure class="reveal">
+      <figure class="reveal steamy">
         <img src="/assets/img/menu/jiao-zi.jpg" alt="Gedämpfte Jiao Zi im Bambuskorb" width="550" height="440" loading="lazy">
+        <span class="steam steam--late" aria-hidden="true"><i></i><i></i><i></i></span>
         <figcaption class="caption"><span>Nr. 8 · Gedämpfte Jiao Zi</span><span class="num">CHF {chf(find('8')[1]['price'])}</span></figcaption>
       </figure>
     </div>
   </div>
 </section>
 
-<section class="dark" aria-labelledby="bestellen">
+<section class="dark dark--film" aria-labelledby="bestellen">
+  <div class="dark__bg" aria-hidden="true">
+    <video class="bgvid" muted loop playsinline preload="none" poster="/assets/video/kueche-unscharf.jpg" data-src="/assets/video/kueche-unscharf.mp4"></video>
+  </div>
   <div class="wrap">
     <span class="meta">Bestellen zum Abholen</span>
     <h2 class="h2" id="bestellen" style="margin-top:14px">Bestellt in drei <em>Schritten.</em></h2>
@@ -333,6 +382,11 @@ def page_home():
     </div>
   </div>
 </section>
+
+<figure class="band" aria-label="Gebackenes Poulet, gebratene Nudeln und Frühlingsrollen auf dem Tisch">
+  <img class="band__img" src="/assets/img/band-1600.jpg" srcset="/assets/img/band-900.jpg 900w, /assets/img/band-1600.jpg 1600w" sizes="100vw" alt="" width="1600" height="900" loading="lazy" data-parallax>
+  <figcaption class="wrap band__cap"><span class="band__line">Frisch aus dem Wok,<br><em>jeden Tag ausser Montag.</em></span></figcaption>
+</figure>
 
 <section class="section wrap" aria-labelledby="besuch">
   <div class="grid section__head reveal">
@@ -525,17 +579,12 @@ def page_reservation():
             "Tisch reservieren · Man Fu Ly Grenchen",
             "Reservieren Sie einen Tisch im China-Restaurant Man Fu Ly in Grenchen, per WhatsApp oder Telefon.",
             "/reservierung/",
+            extra_css=PRELOAD_FILM,
             jsonld=RESTAURANT_LD,
         )
         + header("/reservierung/")
         + f"""<main id="main">
-<section class="page-head wrap">
-  <span class="meta">Man Fu Ly · Reservierung</span>
-  <div class="grid page-head__row">
-    <h1 class="display">Tisch <em>reservieren</em></h1>
-    <p class="page-head__aside">Wählen Sie Tag, Zeit und Anzahl Personen. Die Anfrage geht per WhatsApp an uns, wir bestätigen so schnell wie möglich.</p>
-  </div>
-</section>
+{film_head("Man Fu Ly · Reservierung", "Tisch <em>reservieren</em>", "Wählen Sie Tag, Zeit und Anzahl Personen. Die Anfrage geht per WhatsApp an uns, wir bestätigen so schnell wie möglich.")}
 
 <section class="wrap">
   <div class="grid res">
@@ -590,17 +639,12 @@ def page_contact():
             "Kontakt & Anfahrt · Man Fu Ly Grenchen",
             f"China-Restaurant Man Fu Ly, {STREET}, {CITY}. Telefon {PHONE_LABEL}, WhatsApp, E-Mail und Öffnungszeiten.",
             "/kontakt/",
+            extra_css=PRELOAD_FILM,
             jsonld=RESTAURANT_LD,
         )
         + header("/kontakt/")
         + f"""<main id="main">
-<section class="page-head wrap">
-  <span class="meta">Man Fu Ly · Kontakt</span>
-  <div class="grid page-head__row">
-    <h1 class="display">Kontakt</h1>
-    <p class="page-head__aside">Für Bestellungen, Reservierungen und Fragen. Am schnellsten per Telefon oder WhatsApp.</p>
-  </div>
-</section>
+{film_head("Man Fu Ly · Kontakt", "Kontakt", "Für Bestellungen, Reservierungen und Fragen. Am schnellsten per Telefon oder WhatsApp.")}
 
 <section class="wrap">
   <ul class="index contact-index">
