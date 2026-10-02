@@ -55,9 +55,9 @@
   function qtyHTML(nr, q, label) {
     return (
       '<span class="qty" role="group" aria-label="Menge ' + label + '">' +
-      '<button type="button" data-dec="' + nr + '" aria-label="Eins weniger">−</button>' +
-      '<span aria-live="polite">' + q + "</span>" +
-      '<button type="button" data-inc="' + nr + '" aria-label="Eins mehr">+</button></span>'
+      '<button type="button" data-dec="' + nr + '" aria-label="' + label + ': eins weniger">−</button>' +
+      "<span>" + q + "</span>" +
+      '<button type="button" data-inc="' + nr + '" aria-label="' + label + ': eins mehr">+</button></span>'
     );
   }
   function shortName(d) {
@@ -110,7 +110,14 @@
     document.querySelectorAll("[data-total]").forEach(function (el) { el.textContent = chf(t); });
     document.querySelectorAll("[data-count]").forEach(function (el) { el.textContent = n; });
     bar.hidden = n === 0 && !sent;
+    live.textContent = n ? "Warenkorb: " + n + (n === 1 ? " Artikel, " : " Artikel, ") + chf(t) : "Warenkorb ist leer";
   }
+
+  /* one polite live region for cart changes (screen readers) */
+  var live = document.createElement("div");
+  live.className = "sr-only";
+  live.setAttribute("aria-live", "polite");
+  document.body.appendChild(live);
 
   function escapeHTML(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
@@ -118,36 +125,75 @@
     });
   }
 
-  document.addEventListener("click", function (e) {
-    var inc = e.target.closest("[data-inc]");
-    var dec = e.target.closest("[data-dec]");
-    if (inc) {
-      var nr = inc.dataset.inc;
-      var first = !cart[nr];
-      sent = false;
-      setQty(nr, (cart[nr] || 0) + 1);
-      if (first) {
-        MFL.toast(byNr[nr].name.replace(/,?\s*scharf$/i, "") + " hinzugefügt");
-        // keep focus on the control that replaced the + button
-        var again = byNr[nr].el.querySelector("[data-inc]");
-        if (again && inc.closest(".dish")) again.focus();
+  /* Re-rendering replaces the buttons, so put keyboard focus back where it was */
+  function refocus(key, kind, inCart, index) {
+    var sel = "[data-" + kind + '="' + key + '"]';
+    var target;
+    if (inCart) {
+      target = itemsEl.querySelector(sel);
+      if (!target) {
+        var rest = itemsEl.querySelectorAll("[data-inc]");
+        target = rest[Math.min(index, rest.length - 1)] || cartEl.querySelector(".cart__close:not([hidden])") || form.elements.name;
+        if (target && !target.offsetParent) target = document.getElementById("q");
       }
-    } else if (dec) {
-      var k = dec.dataset.dec;
-      setQty(k, (cart[k] || 0) - 1);
-      var still = byNr[k].el.querySelector("[data-dec]");
-      if (still && dec.closest(".dish")) still.focus();
+    } else {
+      target = byNr[key].el.querySelector(sel) || byNr[key].el.querySelector("[data-inc]");
     }
+    if (target) target.focus();
+  }
+
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-inc], [data-dec]");
+    if (!btn) return;
+    var kind = btn.hasAttribute("data-inc") ? "inc" : "dec";
+    var key = btn.dataset[kind];
+    if (!byNr[key]) return;
+    var inCart = !!btn.closest("[data-cart-items]");
+    var index = inCart ? Array.prototype.indexOf.call(itemsEl.children, btn.closest("li")) : 0;
+    var hadFocus = document.activeElement === btn;
+    if (kind === "inc") {
+      var first = !cart[key];
+      sent = false;
+      setQty(key, (cart[key] || 0) + 1);
+      if (first) MFL.toast(byNr[key].name.replace(/,\s*scharf$/i, "") + " hinzugefügt");
+    } else {
+      setQty(key, (cart[key] || 0) - 1);
+    }
+    if (hadFocus || e.detail === 0) refocus(key, kind, inCart, index);
   });
 
   /* open / close the sheet on small screens */
+  var sheetMQ = window.matchMedia("(max-width: 1099px)");
+  function behind() {
+    // everything except the cart sheet itself
+    var list = [".strip", ".header", ".page-head", ".toolbar", ".menu-list", ".cart-bar", ".footer"];
+    return list.map(function (s) { return document.querySelector(s); }).filter(Boolean);
+  }
   function openCart(open) {
     cartEl.classList.toggle("is-open", open);
     scrim.hidden = !open;
     document.body.classList.toggle("cart-open", open);
+    if (open) {
+      cartEl.setAttribute("role", "dialog");
+      cartEl.setAttribute("aria-modal", "true");
+    } else {
+      cartEl.removeAttribute("role");
+      cartEl.removeAttribute("aria-modal");
+    }
+    behind().forEach(function (el) {
+      if (open) el.setAttribute("inert", "");
+      else el.removeAttribute("inert");
+    });
     if (open) cartEl.querySelector(".cart__close").focus();
-    else bar.focus();
+    else if (!bar.hidden) bar.focus();
+    else document.getElementById("q").focus();
   }
+  // leaving the small-screen layout while the sheet is open must not leave the page inert
+  var onMQ = function () {
+    if (!sheetMQ.matches && cartEl.classList.contains("is-open")) openCart(false);
+  };
+  if (sheetMQ.addEventListener) sheetMQ.addEventListener("change", onMQ);
+  else if (sheetMQ.addListener) sheetMQ.addListener(onMQ);
   bar.addEventListener("click", function () { openCart(true); });
   document.querySelectorAll("[data-cart-close]").forEach(function (b) {
     b.addEventListener("click", function () { openCart(false); });
@@ -161,14 +207,17 @@
   var timeHint = form.querySelector("[data-time-hint]");
   var LEAD = 25; // minutes kitchen needs at least
 
+  var lastTimesHTML = "";
   function fillTimes() {
     var now = MFL.zurichNow();
     var minNow = now.getHours() * 60 + now.getMinutes();
     var opts = [];
+    var short = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
     var dayLabel = function (offset, d) {
-      if (offset === 0) return "Heute";
-      if (offset === 1) return "Morgen";
-      return MFL.dayNames[d.getDay()] + " " + d.getDate() + "." + (d.getMonth() + 1) + ".";
+      var date = short[d.getDay()] + " " + d.getDate() + "." + (d.getMonth() + 1) + ".";
+      if (offset === 0) return "Heute, " + date;
+      if (offset === 1) return "Morgen, " + date;
+      return date;
     };
     // look up to 7 days ahead, collect slots of the first day that still has any
     for (var off = 0; off < 7 && !opts.length; off++) {
@@ -179,24 +228,37 @@
         var from = MFL.toMin(w[0]) + 15, to = MFL.toMin(w[1]) - 15;
         var start = off === 0 ? Math.max(from, Math.ceil((minNow + LEAD) / 15) * 15) : from;
         for (var m = start; m <= to; m += 15) {
-          opts.push({ label: dayLabel(off, d) + ", " + MFL.fmt(m), value: dayLabel(off, d) + " " + MFL.fmt(m), today: off === 0 });
+          opts.push({ label: dayLabel(off, d) + ", " + MFL.fmt(m), value: dayLabel(off, d) + ", " + MFL.fmt(m) + " Uhr" });
         }
       });
     }
     var st = MFL.status(now);
+    // "as soon as possible" only while the kitchen can still finish before closing
+    var asap = st.open && minNow + LEAD <= MFL.toMin(st.until);
     var html = "";
-    if (st.open) {
+    if (asap) {
       html += '<option value="So schnell wie möglich">So schnell wie möglich (ca. 20–30 Min.)</option>';
     }
     html += opts.map(function (o) {
       return '<option value="' + o.value + '">' + o.label + "</option>";
     }).join("");
-    var prev = timeSel.value;
-    timeSel.innerHTML = html;
-    if (prev) timeSel.value = prev;
-    timeHint.textContent = st.open
+    if (!html) html = '<option value="">Zurzeit keine Abholzeit verfügbar</option>';
+    var hint = asap
       ? "Gedämpfte Vorspeisen brauchen ca. 20 Min."
-      : "Wir haben gerade geschlossen. Sie können für die nächste Öffnungszeit vorbestellen.";
+      : st.open
+        ? "Für heute ist keine Abholung mehr möglich. Sie können für die nächste Öffnungszeit vorbestellen."
+        : "Momentan geschlossen. Sie können für die nächste Öffnungszeit vorbestellen.";
+    // rebuilding an open <select> closes it on Android, so only touch it when something changed
+    if (html !== lastTimesHTML) {
+      var prev = timeSel.value;
+      lastTimesHTML = html;
+      timeSel.innerHTML = html;
+      if (prev) {
+        timeSel.value = prev;
+        if (timeSel.value !== prev) hint = "Die gewählte Zeit ist nicht mehr verfügbar. Bitte eine neue Abholzeit wählen.";
+      }
+    }
+    timeHint.textContent = hint;
   }
 
   /* ---------------- submit → WhatsApp ---------------- */
@@ -231,6 +293,10 @@
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+    if (total() === 0) {
+      MFL.toast("Reis ist eine Beilage. Bitte noch ein Gericht wählen.");
+      return;
+    }
     var ok = true;
     ["name", "tel", "time"].forEach(function (n) {
       var f = form.elements[n];
@@ -245,10 +311,15 @@
       MFL.toast("Bitte Name, Telefon und Abholzeit angeben");
       return;
     }
+    var time = form.elements.time.value;
+    if (time === "So schnell wie möglich") {
+      var n = MFL.zurichNow();
+      time += " (bestellt " + n.getDate() + "." + (n.getMonth() + 1) + ". um " + MFL.fmt(n.getHours() * 60 + n.getMinutes()) + " Uhr)";
+    }
     var data = {
       name: form.elements.name.value.trim(),
       tel: form.elements.tel.value.trim(),
-      time: form.elements.time.value,
+      time: time,
       note: form.elements.note.value.trim(),
     };
     try {
@@ -349,8 +420,12 @@
             var on = c.dataset.target === en.target.id;
             c.classList.toggle("is-active", on);
             if (on) {
+              // only scroll the chip row when the active chip is out of view
               var row = c.parentNode;
-              row.scrollTo({ left: c.offsetLeft - row.offsetLeft - 8, behavior: "smooth" });
+              var left = c.offsetLeft - row.offsetLeft;
+              if (left < row.scrollLeft || left + c.offsetWidth > row.scrollLeft + row.clientWidth) {
+                row.scrollTo({ left: Math.max(0, left - 16), behavior: "smooth" });
+              }
             }
           });
         });

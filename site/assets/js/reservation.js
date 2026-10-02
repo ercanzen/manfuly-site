@@ -49,8 +49,17 @@
   function fill() {
     if (!date.value) return;
     var d = parse(date.value);
-    var slots = slotsFor(d);
     var prev = time.value;
+    // the form is novalidate, so typed dates outside min/max must be caught here
+    if (isNaN(d.getTime()) || date.value < date.min || date.value > date.max) {
+      time.innerHTML = '<option value="">Keine Zeiten verfügbar</option>';
+      hint.textContent = date.value < date.min
+        ? "Dieses Datum liegt in der Vergangenheit."
+        : "Reservierungen sind bis 90 Tage im Voraus möglich.";
+      date.setAttribute("aria-invalid", "true");
+      return;
+    }
+    var slots = slotsFor(d);
     if (!slots.length) {
       time.innerHTML = '<option value="">Keine Zeiten verfügbar</option>';
       hint.textContent = (MFL.hours[d.getDay()] || []).length
@@ -73,6 +82,7 @@
     else if (dinner.length) time.value = dinner[Math.min(2, dinner.length - 1)];
   }
   date.addEventListener("change", fill);
+  date.addEventListener("blur", fill);
   fill();
 
   try {

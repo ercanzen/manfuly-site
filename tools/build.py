@@ -23,9 +23,17 @@ WHATSAPP = "41795504481"
 WHATSAPP_LABEL = "079 550 44 81"
 STREET = "Bettlachstrasse 36"
 CITY = "2540 Grenchen"
-VERSION = "1"
+VERSION = "2"
 
 e = html.escape
+
+# Rendered into the HTML so hours are visible without JavaScript; main.js re-renders and marks today.
+_DAYS = ["Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]
+HOURS_TABLE = (
+    '<table class="hours" data-hours><tbody>'
+    + "".join(f'<tr><th scope="row">{d}</th><td>11:00–14:00<br>17:30–22:00</td></tr>' for d in _DAYS)
+    + '<tr><th scope="row">Montag</th><td><span class="closed">Ruhetag</span></td></tr></tbody></table>'
+)
 
 
 def slug(s):
@@ -92,7 +100,7 @@ def head(title, desc, path, extra_css="", jsonld=None):
 <meta name="description" content="{e(desc)}">
 <link rel="canonical" href="{url}">
 <meta name="theme-color" content="#f5efe4">
-<meta property="og:type" content="restaurant">
+<meta property="og:type" content="website">
 <meta property="og:site_name" content="Man Fu Ly">
 <meta property="og:title" content="{e(title)}">
 <meta property="og:description" content="{e(desc)}">
@@ -124,7 +132,7 @@ def header(path):
   <div class="wrap strip__inner">
     <span class="status" data-status>Öffnungszeiten</span>
     <span class="strip__addr">{STREET}, {CITY}</span>
-    <a href="tel:{PHONE}" class="num">{PHONE_LABEL}</a>
+    <a href="tel:{PHONE}" class="num strip__phone">{PHONE_LABEL}</a>
   </div>
 </div>
 <header class="header">
@@ -173,7 +181,6 @@ def footer(extra_js=""):
         <a href="/kontakt/">Kontakt &amp; Anfahrt</a>
       </div>
     </div>
-    <div class="footer__word"><img src="/assets/brand/wordmark.svg" alt="" width="1200" height="205" loading="lazy"></div>
     <div class="footer__base">
       <span>© <span data-year>2026</span> China-Restaurant Man Fu Ly, Grenchen</span>
       <span><a href="/impressum/">Impressum &amp; Datenschutz</a></span>
@@ -256,26 +263,20 @@ def page_home():
         )
         + header("/")
         + f"""<main id="main">
-<section class="hero wrap" aria-label="Willkommen">
-  <h1 class="hero__word"><img src="/assets/brand/wordmark.svg" alt="Man Fu Ly" width="1200" height="205"><span class="sr-only"> · China-Restaurant in Grenchen</span></h1>
+<section class="hero wrap" aria-labelledby="hero-title">
   <div class="grid hero__row">
     <div class="hero__text">
-      <p class="lead">Chinesische Küche aus Wok und Bambuskorb. Im Restaurant an der Bettlachstrasse oder zum Mitnehmen.</p>
+      <span class="meta">China-Restaurant in Grenchen</span>
+      <h1 class="hero__title" id="hero-title">Chinesische Küche aus Wok und <em>Bambuskorb.</em></h1>
+      <p class="lead">Im Restaurant an der Bettlachstrasse 36 oder zum Mitnehmen. Online bestellen und frisch zubereitet abholen.</p>
       <div class="hero__actions">
         <a class="btn" href="/speisekarte/">Online bestellen</a>
         <a class="link" href="/reservierung/">Tisch reservieren <span class="arrow" aria-hidden="true">→</span></a>
       </div>
     </div>
     <figure class="hero__media">
-      <img src="/assets/img/hero.jpg" alt="Gedeckter Tisch mit Ente, Frühlingsrollen, Dim Sum, gebratenen Nudeln und Wan Tan" width="1920" height="1536" fetchpriority="high">
-      <figcaption class="caption"><span>Eine Auswahl aus unserer Küche</span><span class="num">Abb. 01</span></figcaption>
+      <img src="/assets/img/hero-1200.jpg" srcset="/assets/img/hero-800.jpg 800w, /assets/img/hero-1200.jpg 1200w, /assets/img/hero.jpg 1920w" sizes="(min-width: 900px) 50vw, 100vw" alt="Gedeckter Tisch mit Ente, Frühlingsrollen, Dim Sum, gebratenen Nudeln und Wan Tan" width="1920" height="1536" fetchpriority="high">
     </figure>
-    <div class="hero__meta meta">
-      <span>{STREET}, Grenchen</span>
-      <span class="status" data-status></span>
-      <span>Dienstag bis Sonntag</span>
-      <span>{TOTAL} Gerichte</span>
-    </div>
   </div>
 </section>
 
@@ -341,7 +342,7 @@ def page_home():
   <div class="grid visit">
     <div class="visit__info reveal">
       <span class="meta">Öffnungszeiten</span>
-      <table class="hours" data-hours><tbody><tr><th>Dienstag bis Sonntag</th><td>11:00–14:00<br>17:30–22:00</td></tr><tr><th>Montag</th><td>Ruhetag</td></tr></tbody></table>
+      {HOURS_TABLE}
       <dl class="contact-list">
         <div><dt class="meta">Telefon</dt><dd><a href="tel:{PHONE}" class="num">{PHONE_LABEL}</a></dd></div>
         <div><dt class="meta">WhatsApp</dt><dd><a href="https://wa.me/{WHATSAPP}" class="num">{WHATSAPP_LABEL}</a></dd></div>
@@ -573,7 +574,7 @@ def page_reservation():
       <span class="meta">Lieber persönlich?</span>
       <p class="h3" style="margin:12px 0 4px"><a href="tel:{PHONE}" class="num" style="text-decoration:none">{PHONE_LABEL}</a></p>
       <p class="form-note">Während der Öffnungszeiten erreichen Sie uns auch telefonisch.</p>
-      <table class="hours" data-hours></table>
+      {HOURS_TABLE}
     </aside>
   </div>
 </section>
@@ -615,7 +616,7 @@ def page_contact():
       <span class="meta" id="anfahrt">Adresse</span>
       <p class="h3" style="margin:12px 0 36px">China-Restaurant Man Fu Ly<br>{STREET}<br>{CITY}</p>
       <span class="meta">Öffnungszeiten</span>
-      <table class="hours" data-hours></table>
+      {HOURS_TABLE}
     </div>
     <div class="visit__map reveal">
       {map_block()}
