@@ -23,7 +23,7 @@ WHATSAPP = "41795504481"
 WHATSAPP_LABEL = "079 550 44 81"
 STREET = "Bettlachstrasse 36"
 CITY = "2540 Grenchen"
-VERSION = "7"
+VERSION = "8"
 
 e = html.escape
 

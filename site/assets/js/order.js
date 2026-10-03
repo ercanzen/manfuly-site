@@ -322,9 +322,6 @@
       time: time,
       note: form.elements.note.value.trim(),
     };
-    try {
-      localStorage.setItem("mfl-contact", JSON.stringify({ name: data.name, tel: data.tel }));
-    } catch (err) {}
     lastLink = MFL.waLink(message(data));
     sent = true;
     render();
@@ -345,10 +342,9 @@
     fillTimes();
   });
 
+  // Older versions stored name and phone; remove what is left.
   try {
-    var c = JSON.parse(localStorage.getItem("mfl-contact") || "{}");
-    if (c.name) form.elements.name.value = c.name;
-    if (c.tel) form.elements.tel.value = c.tel;
+    localStorage.removeItem("mfl-contact");
   } catch (e) {}
 
   /* ---------------- search + filters ---------------- */

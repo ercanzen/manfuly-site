@@ -85,10 +85,9 @@
   date.addEventListener("blur", fill);
   fill();
 
+  // Older versions stored name and phone; remove what is left.
   try {
-    var c = JSON.parse(localStorage.getItem("mfl-contact") || "{}");
-    if (c.name) form.elements.name.value = c.name;
-    if (c.tel) form.elements.tel.value = c.tel;
+    localStorage.removeItem("mfl-contact");
   } catch (e) {}
 
   form.addEventListener("input", function (e) {
@@ -124,9 +123,6 @@
     ];
     var note = form.elements.note.value.trim();
     if (note) lines.push("Bemerkung: " + note);
-    try {
-      localStorage.setItem("mfl-contact", JSON.stringify({ name: form.elements.name.value.trim(), tel: form.elements.tel.value.trim() }));
-    } catch (err) {}
     var link = MFL.waLink(lines.join("\n"));
     var w = window.open(link, "_blank");
     if (!w) window.location.href = link;
